@@ -1,0 +1,16 @@
+image:
+  registry: "20.199.160.5:5000"
+  backendRepo: "myapp-backend"
+  frontendRepo: "myapp-frontend"
+  tag: "latest"
+
+ingress:
+  enabled: true
+  className: "traefik"
+  hostApp: "app.arcadix.ai"
+  hostApi: "api.arcadix.ai"
+
+secrets:
+  dbName: "appdb"
+  dbUser: "appuser"
+  dbPassword: "apppass"
