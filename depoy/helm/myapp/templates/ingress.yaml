@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: myapp
 spec:
-  ingressClassName: {{ .Values.ingress.className | quote }}
+  ingressClassName: traefik
   rules:
     - host: {{ .Values.ingress.hostApp | quote }}
       http:

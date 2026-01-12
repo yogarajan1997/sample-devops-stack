@@ -1,0 +1,11 @@
+image:
+  registry: ""
+  frontendRepo: ""
+  backendRepo: ""
+  tag: "latest"
+
+ingress:
+  enabled: false
+  hostApp: ""
+  hostApi: ""
+
