@@ -1,0 +1,19 @@
+image:
+  registry: "10.0.0.11:5000"
+  backendRepo: "myapp-backend"
+  frontendRepo: "myapp-frontend"
+  tag: "uat"
+
+ingress:
+  enabled: true
+  className: "traefik"
+  hostApp: "uat-app.arcadix.ai"
+  hostApi: "uat-api.arcadix.ai"
+  tls: true
+  tlsSecret: myapp-uat-tls
+
+env:
+  DB_HOST: postgres-postgresql.database.svc.cluster.local
+  DB_PORT: "5432"
+  DB_NAME: appdb
+  DB_USER: appuser
