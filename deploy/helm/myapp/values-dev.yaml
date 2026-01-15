@@ -14,3 +14,10 @@ secrets:
   dbName: "appdb"
   dbUser: "appuser"
   dbPassword: "apppass"
+
+env:
+  DB_HOST: postgres-postgresql.database.svc.cluster.local
+  DB_PORT: "5432"
+  DB_NAME: appdb
+  DB_USER: appuser
+  DB_PASSWORD: apppass
