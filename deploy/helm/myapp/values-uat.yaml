@@ -6,11 +6,16 @@ image:
 
 ingress:
   enabled: true
-  className: "traefik"
-  hostApp: "uat-app.arcadix.ai"
-  hostApi: "uat-api.arcadix.ai"
-  tls: true
-  tlsSecret: myapp-uat-tls
+  className: traefik
+
+  hostApp: uat-app.arcadix.ai
+  hostApi: uat-api.arcadix.ai
+
+  tls:
+    enabled: true
+    issuer: letsencrypt-prod
+    secretName: myapp-uat-tls
+
 
 env:
   DB_HOST: postgres-postgresql.database.svc.cluster.local
