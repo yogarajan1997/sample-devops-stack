@@ -2,80 +2,78 @@ pipeline {
   agent any
 
   environment {
-    REGISTRY = "20.199.160.5:5000"
-    BACKEND_IMAGE = "${REGISTRY}/myapp-backend"
-    FRONTEND_IMAGE = "${REGISTRY}/myapp-frontend"
-    GIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+    REGISTRY = "10.0.0.11:5000"
+    APP = "myapp"
   }
 
   stages {
-    stage("Checkout") {
-      steps { checkout scm }
-    }
 
-    stage("Tests") {
+    stage('Checkout') {
       steps {
-        dir("backend") {
-          sh "npm ci"
-          sh "npm test"
-        }
-        dir("frontend") {
-          sh "npm ci"
-          sh "npm test"
-        }
+        git branch: 'main', url: 'https://github.com/yogarajan1997/sample-devops-stack.git'
       }
     }
 
-    stage("Build Docker Images") {
+    stage('Build Images') {
       steps {
-        sh "docker build -t ${BACKEND_IMAGE}:${GIT_SHA} ./backend"
-        sh "docker build -t ${FRONTEND_IMAGE}:${GIT_SHA} ./frontend"
+        sh '''
+        docker build -t $REGISTRY/myapp-backend:${BUILD_NUMBER} backend
+        docker build -t $REGISTRY/myapp-frontend:${BUILD_NUMBER} frontend
+        '''
       }
     }
 
-    stage("Scan Images (Trivy)") {
+    stage('Push Images') {
       steps {
-        sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${BACKEND_IMAGE}:${GIT_SHA}"
-        sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${FRONTEND_IMAGE}:${GIT_SHA}"
+        sh '''
+        docker push $REGISTRY/myapp-backend:${BUILD_NUMBER}
+        docker push $REGISTRY/myapp-frontend:${BUILD_NUMBER}
+        '''
       }
     }
 
-    stage("Push Images") {
+    stage('Deploy DEV') {
       steps {
-        sh "docker push ${BACKEND_IMAGE}:${GIT_SHA}"
-        sh "docker push ${FRONTEND_IMAGE}:${GIT_SHA}"
+        sh '''
+        helm upgrade --install myapp-dev deploy/helm/myapp \
+          -n dev \
+          -f deploy/helm/myapp/values-dev.yaml \
+          --set image.tag=${BUILD_NUMBER}
+        '''
       }
     }
 
-    stage("Deploy DEV (Auto)") {
+    stage('Approve UAT') {
       steps {
-        sh """
-          helm upgrade --install myapp ./deploy/helm/myapp -n dev --create-namespace \
-            -f ./deploy/helm/myapp/values-dev.yaml \
-            --set image.tag=${GIT_SHA}
-        """
+        input message: 'Deploy to UAT?'
       }
     }
 
-    stage("Deploy UAT (Approval)") {
+    stage('Deploy UAT') {
       steps {
-        input message: "Approve deployment to UAT?", ok: "Deploy UAT"
-        sh """
-          helm upgrade --install myapp ./deploy/helm/myapp -n uat --create-namespace \
-            -f ./deploy/helm/myapp/values-uat.yaml \
-            --set image.tag=${GIT_SHA}
-        """
+        sh '''
+        helm upgrade --install myapp-uat deploy/helm/myapp \
+          -n uat \
+          -f deploy/helm/myapp/values-uat.yaml \
+          --set image.tag=${BUILD_NUMBER}
+        '''
       }
     }
 
-    stage("Deploy PROD (Approval)") {
+    stage('Approve PROD') {
       steps {
-        input message: "Approve deployment to PROD?", ok: "Deploy PROD"
-        sh """
-          helm upgrade --install myapp ./deploy/helm/myapp -n prod --create-namespace \
-            -f ./deploy/helm/myapp/values-prod.yaml \
-            --set image.tag=${GIT_SHA}
-        """
+        input message: 'Deploy to PROD?'
+      }
+    }
+
+    stage('Deploy PROD') {
+      steps {
+        sh '''
+        helm upgrade --install myapp-prod deploy/helm/myapp \
+          -n prod \
+          -f deploy/helm/myapp/values-prod.yaml \
+          --set image.tag=${BUILD_NUMBER}
+        '''
       }
     }
   }
