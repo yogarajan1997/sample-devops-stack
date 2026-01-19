@@ -4,7 +4,6 @@ kind: Ingress
 metadata:
   name: myapp
   annotations:
-  traefik.ingress.kubernetes.io/router.middlewares: "{{ .Release.Namespace }}-strip-api@kubernetescrd"
     {{- if .Values.ingress.tls.enabled }}
     cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
     {{- end }}
