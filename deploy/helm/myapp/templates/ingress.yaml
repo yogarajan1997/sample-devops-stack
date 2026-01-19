@@ -4,6 +4,7 @@ kind: Ingress
 metadata:
   name: myapp
   annotations:
+  traefik.ingress.kubernetes.io/router.middlewares: "{{ .Release.Namespace }}-strip-api@kubernetescrd"
     {{- if .Values.ingress.tls.enabled }}
     cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
     {{- end }}
@@ -17,6 +18,9 @@ spec:
       secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
   rules:
+    # -----------------------------
+    # FRONTEND (/)
+    # -----------------------------
     - host: {{ .Values.ingress.hostApp }}
       http:
         paths:
@@ -27,10 +31,14 @@ spec:
                 name: frontend
                 port:
                   number: 80
+
+    # -----------------------------
+    # BACKEND (/api)
+    # -----------------------------
     - host: {{ .Values.ingress.hostApi }}
       http:
         paths:
-          - path: /
+          - path: /api
             pathType: Prefix
             backend:
               service:
