@@ -6,9 +6,14 @@ image:
 
 ingress:
   enabled: true
-  className: "traefik"
-  hostApp: "dev-app.arcadix.ai"
-  hostApi: "dev-api.arcadix.ai"
+  className: traefik
+  hostApp: dev-app.arcadix.ai
+  hostApi: dev-api.arcadix.ai
+  tls:
+    enabled: true
+    issuer: letsencrypt-prod
+    secretName: myapp-dev-tls
+
 
 secrets:
   dbName: "appdb"
