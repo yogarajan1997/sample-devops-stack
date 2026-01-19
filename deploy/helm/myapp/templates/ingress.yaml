@@ -4,16 +4,13 @@ kind: Ingress
 metadata:
   name: myapp
   annotations:
-    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+    {{- if .Values.ingress.tls }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer | quote }}
+    {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
-  tls:
-    - hosts:
-        - {{ .Values.ingress.hostApp }}
-        - {{ .Values.ingress.hostApi }}
-      secretName: {{ .Values.ingress.tls.secretName }}
   rules:
-    - host: {{ .Values.ingress.hostApp | quote }}
+    - host: {{ .Values.ingress.hostApp }}
       http:
         paths:
           - path: /
@@ -23,7 +20,7 @@ spec:
                 name: frontend
                 port:
                   number: 80
-    - host: {{ .Values.ingress.hostApi | quote }}
+    - host: {{ .Values.ingress.hostApi }}
       http:
         paths:
           - path: /
@@ -33,4 +30,12 @@ spec:
                 name: backend
                 port:
                   number: 8080
+
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.hostApp }}
+        - {{ .Values.ingress.hostApi }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
 {{- end }}
