@@ -39,13 +39,14 @@ export default function App() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                fontFamily: "Arial",
+                fontFamily: "Arial, sans-serif",
+                backgroundColor: "#fff",
             }}
         >
             <div style={{ maxWidth: 900, width: "100%", padding: 20 }}>
 
-                {/* ===== CI/CD DEMO HEADER ===== */}
-                <div style={{ marginBottom: 40, textAlign: "center" }}>
+                {/* ===== CI/CD HEADER (CENTERED) ===== */}
+                <div style={{ textAlign: "center", marginBottom: 40 }}>
                     <h1 style={{ marginBottom: 10 }}>
                         Hello Mr. Pascal Haunreiter 👋
                     </h1>
@@ -59,7 +60,7 @@ export default function App() {
                     </p>
 
                     <p style={{ marginTop: 15, fontStyle: "italic", color: "#888" }}>
-                        Built & automated by <strong>Yoga</strong>
+                        <strong>Arcadix GmbH, Switzerland 🇨🇭</strong>
                     </p>
 
                     <hr style={{ marginTop: 30 }} />
